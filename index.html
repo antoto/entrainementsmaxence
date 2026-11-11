@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="Gemini_Generated_Image_po5b3epo5b3epo5b.jpeg" href="Gemini_Generated_Image_po5b3epo5b3epo5b.jpeg">
+<link rel="apple-touch-icon" href="Gemini_Generated_Image_po5b3epo5b3epo5b.jpeg">
+<title>Entrainements Antonin</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#edf0f3; --surface:#ffffff; --surface-2:#f4f6f8; --ink:#15212c; --muted:#5a6b7b; --line:#d6dde4;
+  --accent:#d8143a; --focus:#1d4ed8;
+  --lum:44%; --tintL:94%; --txtL:24%;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --display:"Bahnschrift","DIN Alternate","Roboto Condensed","Arial Narrow",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e161e; --surface:#17212b; --surface-2:#121a23; --ink:#e8eef4; --muted:#93a3b3; --line:#2a3745;
+    --accent:#ff4d6d; --focus:#8fb0ff;
+    --lum:62%; --tintL:21%; --txtL:82%;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink); font-family:var(--font); line-height:1.45;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+button{font:inherit; color:inherit; cursor:pointer}
+:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
+.app{max-width:1320px; margin:0 auto; padding:14px 12px 40px}
+@media (min-width:900px){ .app{padding:24px 24px 56px} }
+
+/* ---------- barre d'outils ---------- */
+.top-row{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 16px}
+h1{
+  margin:0; font-family:var(--display); font-weight:700; font-size:clamp(1.5rem,5vw,2.1rem);
+  letter-spacing:.005em; line-height:1.1;
+}
+.ctrl{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.nav,.seg{display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--surface)}
+.nav button,.seg button,.tool{
+  border:0; background:transparent; padding:8px 13px; min-height:38px;
+}
+.nav button+button,.seg button+button{border-left:1px solid var(--line)}
+.nav button:hover,.seg button:hover,.tool:hover{background:var(--surface-2)}
+.seg button[aria-pressed="true"]{background:var(--ink); color:var(--surface); font-weight:600}
+.tool{border:1px solid var(--line); border-radius:10px; background:var(--surface)}
+.sub{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 16px; margin:12px 0 10px}
+#status{font-size:.82rem; color:var(--muted)}
+.leg{display:flex; flex-wrap:wrap; gap:6px}
+.leg button{
+  display:inline-flex; align-items:center; gap:7px; padding:4px 11px 4px 9px; border-radius:999px;
+  border:1px solid var(--line); background:var(--surface); font-size:.82rem;
+}
+.leg i{width:10px; height:10px; border-radius:3px; background:hsl(var(--h) var(--s,62%) var(--lum))}
+.leg button[aria-pressed="false"]{opacity:.5; text-decoration:line-through}
+
+/* ---------- couleurs par discipline ---------- */
+.chip,.card,.dot,.dhead{
+  --c:hsl(var(--h) var(--s,62%) var(--lum));
+  --t:hsl(var(--h) var(--s,62%) var(--tintL));
+  --tx:hsl(var(--h) var(--s,50%) var(--txtL));
+}
+.off{--s:10%}
+
+/* ---------- vue mois ---------- */
+.month{
+  display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:1px; background:var(--line);
+  border:1px solid var(--line); border-radius:12px; overflow:hidden;
+}
+@media (min-width:900px){ .month{grid-template-columns:repeat(7,minmax(0,1fr)) 9.5rem} }
+.dowh{background:var(--surface-2); padding:7px 6px; font-size:.74rem; color:var(--muted); text-align:center; font-weight:600}
+.wkh{display:none}
+@media (min-width:900px){ .wkh{display:block} }
+.day{background:var(--surface); min-height:4.9rem; padding:4px 3px 5px; min-width:0}
+@media (min-width:700px){ .day{min-height:7.6rem; padding:6px 6px 7px} }
+.day.out{background:var(--surface-2)}
+.day.out .num{opacity:.5}
+.num{
+  border:0; background:transparent; font-family:var(--display); font-size:.9rem; font-weight:700;
+  min-width:1.7rem; height:1.7rem; border-radius:999px; padding:0 4px; color:var(--ink);
+}
+.num:hover{background:var(--surface-2)}
+.today .num{background:var(--accent); color:#fff}
+.chip{
+  display:flex; align-items:center; gap:5px; width:100%; min-width:0; margin-top:3px; text-align:left;
+  border:0; background:var(--t); border-radius:6px; padding:3px 5px 3px 8px; box-shadow:inset 3px 0 0 var(--c);
+}
+.chip:hover{filter:brightness(.97)}
+.chip.opt{box-shadow:inset 3px 0 0 var(--c), inset 0 0 0 1px var(--c); background:transparent}
+.chip.off{background:transparent; box-shadow:inset 3px 0 0 var(--line)}
+.chip .lbl{flex:0 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.66rem; font-weight:700; color:var(--tx)}
+.chip.off .lbl{color:var(--muted); font-weight:600}
+.chip .ttl{display:none; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.74rem}
+.chip .dur{display:none; flex:none; font-size:.68rem; color:var(--muted); font-variant-numeric:tabular-nums}
+@media (min-width:700px){
+  .chip{padding:4px 6px 4px 9px}
+  .chip .lbl{font-size:.7rem}
+  .chip .ttl,.chip .dur{display:block}
+}
+.wk{
+  display:none; background:var(--surface-2); border:0; text-align:left; padding:8px 10px; min-width:0;
+}
+.wk:hover{background:var(--surface)}
+@media (min-width:900px){ .wk{display:block} }
+.wk b{display:block; font-family:var(--display); font-size:.95rem}
+.wk .bl{display:block; font-size:.78rem; color:var(--ink); margin-top:2px}
+.wk .tt{display:block; font-size:.76rem; color:var(--muted); margin-top:4px; font-variant-numeric:tabular-nums}
+
+/* ---------- vue semaine ---------- */
+.wsum{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-bottom:12px}
+.wsum .bloc{font-family:var(--display); font-size:1.2rem; font-weight:700; margin:0}
+.wsum .obj{margin:2px 0 0; color:var(--muted); max-width:70ch}
+.stats{display:flex; flex-wrap:wrap; gap:8px 22px; margin:12px 0 0; padding:0}
+.stats div{min-width:0}
+.stats dt{font-size:.74rem; color:var(--muted)}
+.stats dd{margin:0; font-family:var(--display); font-size:1.15rem; font-weight:700; font-variant-numeric:tabular-nums}
+.week{display:grid; gap:10px; grid-template-columns:minmax(0,1fr)}
+@media (min-width:900px){ .week{grid-template-columns:repeat(7,minmax(0,1fr))} }
+.wday{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:10px; min-width:0}
+.wday.today{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent)}
+.wday h3{margin:0 0 6px; font-size:.92rem; display:flex; gap:8px; align-items:baseline}
+.wday h3 .wd{font-family:var(--display); font-weight:700; font-size:1.02rem}
+.wday h3 .dn{color:var(--muted); font-size:.84rem}
+.none{color:var(--muted); font-size:.84rem; margin:0}
+.card{
+  display:flex; flex-direction:column; gap:4px; width:100%; text-align:left; margin-top:7px; border:0;
+  background:var(--t); border-radius:8px; padding:9px 10px 9px 13px; box-shadow:inset 4px 0 0 var(--c); min-width:0;
+}
+.card:hover{filter:brightness(.97)}
+.card.opt{background:transparent; box-shadow:inset 4px 0 0 var(--c), inset 0 0 0 1px var(--c)}
+.card.off{background:transparent; box-shadow:inset 4px 0 0 var(--line)}
+.card-top{display:flex; align-items:center; gap:8px}
+.card .lbl{font-size:.74rem; font-weight:700; color:var(--tx)}
+.card.off .lbl{color:var(--muted)}
+.card .dur{margin-left:auto; font-size:.8rem; color:var(--muted); font-variant-numeric:tabular-nums}
+.card-ttl{font-weight:600; font-size:.92rem; overflow-wrap:anywhere}
+.card-meta{font-size:.76rem; color:var(--muted)}
+.card-ex{font-size:.8rem; color:var(--muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; overflow-wrap:anywhere}
+
+.prio{display:inline-flex; gap:2px; align-items:flex-end; height:11px}
+.prio i{width:3px; border-radius:1px; background:var(--line)}
+.prio i:nth-child(1){height:5px} .prio i:nth-child(2){height:8px} .prio i:nth-child(3){height:11px}
+.prio.p1 i:nth-child(-n+1),.prio.p2 i:nth-child(-n+2),.prio.p3 i{background:var(--c)}
+
+/* ---------- boîtes de dialogue ---------- */
+dialog{
+  border:0; padding:0; background:var(--surface); color:var(--ink); border-radius:16px;
+  width:min(720px,calc(100vw - 24px)); max-height:min(90dvh,920px);
+  box-shadow:0 24px 70px rgba(0,0,0,.38);
+}
+dialog::backdrop{background:rgba(8,14,20,.58)}
+dialog[open]{animation:rise .16s ease-out}
+@keyframes rise{from{transform:translateY(10px); opacity:0} to{transform:none; opacity:1}}
+@media (prefers-reduced-motion:reduce){ dialog[open]{animation:none} }
+@media (max-width:699px){
+  dialog{margin:auto 0 0; width:100%; max-width:100%; border-radius:18px 18px 0 0; max-height:93dvh}
+}
+.dhead{
+  position:sticky; top:0; z-index:1; background:var(--surface); border-top:6px solid var(--c);
+  padding:12px 14px 10px 18px; display:flex; gap:10px; align-items:flex-start; border-bottom:1px solid var(--line);
+}
+.dhead .grow{flex:1; min-width:0}
+.badge{display:inline-flex; align-items:center; gap:8px; font-size:.8rem; font-weight:700; color:var(--tx)}
+.dhead h2{margin:4px 0 2px; font-family:var(--display); font-size:1.4rem; line-height:1.15; overflow-wrap:anywhere}
+.dhead .when{margin:0; color:var(--muted); font-size:.9rem}
+.x{border:1px solid var(--line); background:var(--surface); border-radius:10px; width:38px; height:38px; font-size:1.2rem; line-height:1}
+.x:hover{background:var(--surface-2)}
+.dbody{padding:14px 18px 8px}
+.dbody .stats{margin:0 0 14px}
+.dbody h3{font-size:.82rem; color:var(--muted); font-weight:600; margin:16px 0 6px}
+.content p{margin:0 0 .6em; max-width:70ch}
+.content ul,.content ol{margin:.2em 0 .8em; padding-left:1.3em; max-width:70ch}
+.content li{margin:.25em 0}
+.extras{display:grid; grid-template-columns:max-content 1fr; gap:4px 14px; margin:0; font-size:.92rem}
+.extras dt{color:var(--muted)} .extras dd{margin:0; overflow-wrap:anywhere}
+details{margin:8px 0}
+summary{cursor:pointer; color:var(--muted); font-size:.86rem}
+details p,details li{font-size:.86rem; color:var(--muted); max-width:70ch}
+.dfoot{display:flex; gap:8px; justify-content:space-between; align-items:center; padding:10px 18px 16px; flex-wrap:wrap}
+.dfoot .src{font-size:.76rem; color:var(--muted); order:3; flex-basis:100%}
+.dfoot button{border:1px solid var(--line); background:var(--surface); border-radius:10px; padding:8px 12px; min-height:38px; max-width:48%; text-align:left}
+.dfoot button:hover:not(:disabled){background:var(--surface-2)}
+.dfoot button:disabled{opacity:.4; cursor:default}
+.dfoot .nx{text-align:right}
+
+.pbody{padding:6px 18px 18px}
+.pbody ul.files{list-style:none; margin:0; padding:0}
+.pf{border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin:8px 0}
+.pf-h{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.pf-m{color:var(--muted); font-size:.84rem}
+.tag{font-size:.72rem; border:1px solid var(--line); border-radius:999px; padding:1px 8px; color:var(--muted)}
+.err{color:#b3261e} @media (prefers-color-scheme:dark){ .err{color:#ff8a80} }
+.drop{
+  display:block; border:2px dashed var(--line); border-radius:12px; padding:18px; text-align:center; margin:12px 0;
+  color:var(--muted); background:var(--surface-2);
+}
+.drop.hot{border-color:var(--focus); color:var(--ink)}
+.btn{border:1px solid var(--ink); background:var(--ink); color:var(--surface); border-radius:10px; padding:9px 14px; font-weight:600}
+.btn.ghost{background:transparent; color:var(--ink); border-color:var(--line); font-weight:500}
+.row{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.85em}
+pre{background:var(--surface-2); border:1px solid var(--line); border-radius:8px; padding:8px 10px; overflow-x:auto; margin:6px 0}
+.empty{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:22px; max-width:760px}
+.empty h2{margin:0 0 6px; font-family:var(--display)}
+.empty p{margin:.4em 0; max-width:65ch}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="top-row">
+      <h1 id="period">Calendrier d’entraînement</h1>
+      <div class="ctrl">
+        <div class="nav" role="group" aria-label="Navigation">
+          <button type="button" id="prev" aria-label="Période précédente">‹</button>
+          <button type="button" id="today">Aujourd’hui</button>
+          <button type="button" id="next" aria-label="Période suivante">›</button>
+        </div>
+        <div class="seg" role="group" aria-label="Type d’affichage">
+          <button type="button" data-view="month" aria-pressed="true">Mois</button>
+          <button type="button" data-view="week" aria-pressed="false">Semaine</button>
+        </div>
+        <button type="button" class="tool" id="plansBtn">Plans</button>
+      </div>
+    </div>
+    <div class="sub">
+      <div id="legend" class="leg" aria-label="Filtrer par discipline"></div>
+      <span id="status" role="status"></span>
+    </div>
+  </header>
+  <main id="main"></main>
+</div>
+<dialog id="detail" aria-labelledby="dTitle"></dialog>
+<dialog id="plans" aria-labelledby="pTitle"></dialog>
+<noscript>Cette page a besoin de JavaScript pour lire vos plans.</noscript>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(() => {
+'use strict';
+
+/* =====================================================================
+   Lecture des fichiers .ods (ZIP + content.xml), sans dépendance au format exact :
+   - plusieurs feuilles par fichier ; une feuille est reconnue d’après ses en-têtes
+     · « séances » : colonnes Date + (Discipline | Séance | Contenu)
+     · « synthèse » : colonnes Semaine + Objectif (+ lignes « Repères »)
+   - colonnes inconnues → affichées telles quelles dans le détail de la séance
+   ===================================================================== */
+const NS = {
+  office:'urn:oasis:names:tc:opendocument:xmlns:office:1.0',
+  table:'urn:oasis:names:tc:opendocument:xmlns:table:1.0',
+  text:'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
+};
+const EMPTY = Object.freeze({type:'empty', text:'', note:''});
+const $ = (s, r=document) => r.querySelector(s);
+const pad = n => String(n).padStart(2,'0');
+const norm = s => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+const FIELD_RULES = [
+  ['date',/^date/], ['dow',/^jour/], ['week',/^semaine/], ['dur',/^dur/],
+  ['disc',/^(discipline|sport|type)/], ['title',/^(seance|titre|nom|intitule)/],
+  ['content',/^(contenu|description|detail|programme)/], ['prio',/^prio/],
+  ['bloc',/^(bloc|phase|cycle)/], ['tss',/^tss/], ['ctl',/^ctl/]
+];
+
+function textOf(node){
+  let out = '';
+  for (const n of node.childNodes){
+    if (n.nodeType === 3) out += n.nodeValue;
+    else if (n.nodeType === 1){
+      if (n.namespaceURI === NS.office && n.localName === 'annotation') continue;
+      if (n.namespaceURI === NS.text && n.localName === 's') out += ' '.repeat(+n.getAttributeNS(NS.text,'c') || 1);
+      else if (n.namespaceURI === NS.text && n.localName === 'tab') out += '\t';
+      else if (n.namespaceURI === NS.text && n.localName === 'line-break') out += '\n';
+      else out += textOf(n);
+    }
+  }
+  return out;
+}
+function parseDur(v){
+  const m = /^P(?:(\d+)D)?T?(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?$/.exec(v || '');
+  if (!m) return 0;
+  return (+m[1]||0)*1440 + (+m[2]||0)*60 + (+m[3]||0) + (+m[4]||0)/60;
+}
+function readCell(c){
+  const t = c.getAttributeNS(NS.office,'value-type');
+  const paras = []; let note = '';
+  for (const ch of c.children){
+    if (ch.namespaceURI === NS.text && (ch.localName === 'p' || ch.localName === 'h')) paras.push(textOf(ch));
+    else if (ch.namespaceURI === NS.office && ch.localName === 'annotation'){
+      note = [...ch.children].filter(x => x.namespaceURI === NS.text && x.localName === 'p').map(textOf).join('\n').trim();
+    }
+  }
+  const text = paras.join('\n');
+  if (!t) return {type: text ? 'string' : 'empty', text, note};
+  if (t === 'date') return {type:'date', iso:(c.getAttributeNS(NS.office,'date-value') || '').slice(0,10), text, note};
+  if (t === 'time') return {type:'time', min:parseDur(c.getAttributeNS(NS.office,'time-value')), text, note};
+  if (t === 'float' || t === 'percentage' || t === 'currency')
+    return {type:'num', num:parseFloat(c.getAttributeNS(NS.office,'value')), text, note};
+  if (t === 'boolean') return {type:'string', text: text || c.getAttributeNS(NS.office,'boolean-value'), note};
+  return {type:'string', text: c.getAttributeNS(NS.office,'string-value') || text, note};
+}
+function readRows(table){
+  const rows = [];
+  for (const tr of table.getElementsByTagNameNS(NS.table,'table-row')){
+    const rrep = Math.min(+tr.getAttributeNS(NS.table,'number-rows-repeated') || 1, 400);
+    const cells = []; let col = 0, any = false;
+    for (const c of tr.children){
+      if (c.namespaceURI !== NS.table || (c.localName !== 'table-cell' && c.localName !== 'covered-table-cell')) continue;
+      const crep = +c.getAttributeNS(NS.table,'number-columns-repeated') || 1;
+      const v = readCell(c);
+      if (v.type !== 'empty' || v.note){
+        any = true;
+        for (let k = 0; k < Math.min(crep, 40); k++) cells[col + k] = v;
+      }
+      col += crep;
+    }
+    if (any) for (let k = 0; k < rrep; k++) rows.push(cells);
+  }
+  return rows;
+}
+const cellAt = (row, i) => (i === undefined ? EMPTY : (row[i] || EMPTY));
+
+function toISO(cell){
+  if (cell.type === 'date' && cell.iso) return cell.iso;
+  const t = (cell.text || '').trim();
+  let m = /^(\d{4})-(\d{2})-(\d{2})/.exec(t);
+  if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+  m = /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/.exec(t);
+  if (m) return `${m[3]}-${pad(m[2])}-${pad(m[1])}`;
+  return '';
+}
+function toMinutes(cell){
+  if (cell.type === 'time') return Math.round(cell.min);
+  if (cell.type === 'num') return cell.num > 0 && cell.num < 1 ? Math.round(cell.num * 1440) : Math.round(cell.num || 0);
+  const t = (cell.text || '').trim();
+  const m = /^(\d{1,3})\s*[:hH]\s*(\d{1,2})?/.exec(t);
+  return m ? (+m[1]) * 60 + (+m[2] || 0) : 0;
+}
+function toNum(cell){
+  if (cell.type === 'num') return cell.num;
+  const n = parseFloat(String(cell.text || '').replace(/\s/g,'').replace(',','.'));
+  return Number.isFinite(n) ? n : null;
+}
+
+function isoWeekKey(d){
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - day);
+  const y = t.getUTCFullYear();
+  const w = Math.ceil((((t - Date.UTC(y,0,1)) / 86400000) + 1) / 7);
+  return `${y}-W${pad(w)}`;
+}
+const parseKey = k => { const [y,m,d] = k.split('-').map(Number); return new Date(y, m-1, d, 12); };
+const keyOf = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const addDays = (d,n) => new Date(d.getFullYear(), d.getMonth(), d.getDate()+n, 12);
+const startOfWeek = d => addDays(d, -((d.getDay() + 6) % 7));
+
+function readSessions(file, rows, hi){
+  const heads = Array.from(rows[hi], c => c || EMPTY);
+  const map = {}, extraCols = [], headerNotes = [];
+  heads.forEach((c,i) => {
+    const h = norm(c.text); if (!h) return;
+    let field = null;
+    for (const [key,re] of FIELD_RULES) if (map[key] === undefined && re.test(h)){ field = key; break; }
+    if (field) map[field] = i; else extraCols.push(i);
+    if (c.note) headerNotes.push({label:c.text.trim(), note:c.note});
+  });
+  const labels = {tss: heads[map.tss]?.text.trim() || 'TSS', ctl: heads[map.ctl]?.text.trim() || 'CTL'};
+  const counter = new Map();
+  for (let r = hi + 1; r < rows.length; r++){
+    const row = rows[r];
+    const date = toISO(cellAt(row, map.date));
+    if (!date) continue;
+    const g = k => cellAt(row, map[k]);
+    const disc = g('disc').text.trim(), title = g('title').text.trim();
+    const base = `${date}|${norm(disc)}|${norm(title)}`;
+    const n = (counter.get(base) || 0) + 1; counter.set(base, n);
+    const notes = headerNotes.slice();
+    const cellNotes = [];
+    for (const i of [...Object.values(map), ...extraCols]){
+      const c = row[i];
+      if (c && c.note) cellNotes.push({label:`${(heads[i]||EMPTY).text.trim()} (cette séance)`, note:c.note});
+    }
+    const tssN = toNum(g('tss')), ctlN = toNum(g('ctl'));
+    file.sessions.push({
+      key:`${base}|${n}`, order:file.sessions.length, date,
+      week:(g('week').text || '').trim() || isoWeekKey(parseKey(date)),
+      dur:toMinutes(g('dur')), disc, title, content:g('content').text.trim(),
+      prio:g('prio').text.trim(), bloc:g('bloc').text.trim(),
+      tss:tssN, ctl:ctlN, labels,
+      optional:/^optionnel/.test(norm(title)),
+      extras:extraCols.map(i => ({label:(heads[i]||EMPTY).text.trim(), text:(row[i]||EMPTY).text.trim()})).filter(e => e.text),
+      notes:notes.concat(cellNotes), file:file.name
+    });
+  }
+}
+function readWeeks(file, rows, hi){
+  const heads = Array.from(rows[hi], c => c || EMPTY);
+  const map = {}, stats = [];
+  heads.forEach((c,i) => {
+    const h = norm(c.text); if (!h) return;
+    if (map.week === undefined && /^semaine/.test(h)) map.week = i;
+    else if (map.bloc === undefined && /^bloc/.test(h)) map.bloc = i;
+    else if (map.obj === undefined && /^objectif/.test(h)) map.obj = i;
+    else stats.push(i);
+  });
+  for (let r = hi + 1; r < rows.length; r++){
+    const row = rows[r];
+    const wk = cellAt(row, map.week).text.trim().toUpperCase();
+    if (!/^\d{4}-W\d{2}$/.test(wk)) continue;
+    file.weeks.push({
+      week:wk, bloc:cellAt(row, map.bloc).text.trim(), obj:cellAt(row, map.obj).text.trim(),
+      stats:stats.map(i => ({label:heads[i].text.trim(), text:(row[i]||EMPTY).text.trim()})).filter(s => s.text)
+    });
+  }
+}
+function readReperes(file, rows){
+  let on = false;
+  for (const row of rows){
+    const t = cellAt(row, 0).text.trim();
+    if (/^reperes?\b/.test(norm(t)) && !row.slice(1).some(c => c && c.text)){ on = true; continue; }
+    if (on && t) file.reperes.push(t);
+  }
+}
+function interpretSheet(file, rows){
+  for (let i = 0; i < Math.min(rows.length, 15); i++){
+    const heads = Array.from(rows[i], c => norm((c || EMPTY).text));
+    const has = re => heads.findIndex(h => re.test(h)) >= 0;
+    if (has(/^date/) && (has(/^(discipline|sport|type)/) || has(/^(seance|contenu)/))){ readSessions(file, rows, i); return 'séances'; }
+    if (has(/^semaine/) && has(/^objectif/)){ readWeeks(file, rows, i); readReperes(file, rows); return 'synthèse'; }
+  }
+  return 'ignorée';
+}
+async function parseODS(name, buf){
+  if (!window.JSZip) throw new Error('Bibliothèque JSZip indisponible (une connexion est nécessaire pour la charger).');
+  const zip = await JSZip.loadAsync(buf);
+  const entry = zip.file('content.xml');
+  if (!entry) throw new Error('Ce fichier n’est pas un .ods valide (content.xml introuvable).');
+  const doc = new DOMParser().parseFromString(await entry.async('string'), 'application/xml');
+  if (doc.getElementsByTagName('parsererror').length) throw new Error('Contenu XML illisible.');
+  const file = {name, sessions:[], weeks:[], reperes:[], sheets:[], origin:''};
+  for (const table of doc.getElementsByTagNameNS(NS.table,'table')){
+    const rows = readRows(table);
+    file.sheets.push({name:table.getAttributeNS(NS.table,'name') || '', kind:interpretSheet(file, rows)});
+  }
+  return file;
+}
+
+/* =====================================================================
+   État + agrégation de tous les fichiers
+   ===================================================================== */
+const state = {
+  view:'month', cursor:null, hidden:new Set(), files:[], errors:[], discovery:{via:null, reason:''},
+  sessions:[], byDate:new Map(), weeks:new Map(), discs:[], loading:true
+};
+const now0 = new Date();
+const todayD = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate(), 12); };
+state.cursor = todayD();
+
+function discKey(disc){
+  const n = norm(disc);
+  if (!n) return 'autre';
+  if (n === 'off' || /^repos/.test(n)) return 'off';
+  if (n === 'ht' || n === 'htr' || /home ?trainer|rouleau|zwift/.test(n)) return 'ht';
+  if (/muscu|ppg|renfo|gainage/.test(n)) return 'muscu';
+  if (n === 'vtt') return 'vtt';
+  if (/route|velo/.test(n)) return 'route';
+  return n;
+}
+const KNOWN_HUE = {off:210, ht:222, muscu:285, route:150, vtt:38};
+const PALETTE = [350, 190, 320, 95, 15, 250, 170];
+function hueOf(k){
+  if (k in KNOWN_HUE) return KNOWN_HUE[k];
+  let h = 0; for (const ch of k) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return PALETTE[h % PALETTE.length];
+}
+const prioLevel = p => { const n = norm(p); return /^bas/.test(n) ? 1 : /^moy/.test(n) ? 2 : /^(hau|elev|fort)/.test(n) ? 3 : 0; };
+const prioHtml = s => { const l = prioLevel(s.prio); return l ? `<i class="prio p${l}" title="Priorité : ${esc(s.prio)}" aria-hidden="true"><i></i><i></i><i></i></i>` : ''; };
+
+function aggregate(){
+  const smap = new Map(), wmap = new Map();
+  state.files.forEach((f, fi) => {
+    f.sessions.forEach(s => { s.seq = fi * 1e6 + s.order; smap.set(s.key, s); });
+    f.weeks.forEach(w => wmap.set(w.week, Object.assign({file:f.name}, w)));
+  });
+  state.sessions = [...smap.values()].sort((a,b) => a.date < b.date ? -1 : a.date > b.date ? 1 : a.seq - b.seq);
+  state.byDate = new Map();
+  state.sessions.forEach((s,i) => { s.id = i; (state.byDate.get(s.date) || state.byDate.set(s.date, []).get(s.date)).push(s); });
+  state.weeks = wmap;
+  const d = new Map();
+  state.sessions.forEach(s => { const k = discKey(s.disc); const e = d.get(k) || {key:k, label:s.disc || 'Autre', n:0}; e.n++; d.set(k, e); });
+  state.discs = [...d.values()].sort((a,b) => (a.key === 'off') - (b.key === 'off') || b.n - a.n);
+}
+
+/* =====================================================================
+   Chargement : liens saisis ci-dessous → liste du dossier (serveur) → plans.json
+   → fichiers choisis (IndexedDB)
+   ===================================================================== */
+const ODS_LINKS = [
+  'Plan nov-dec 2026.ods',
+];
+
+async function discover(){
+  const base = new URL('./', location.href);
+  const keep = u => /\.ods$/i.test(u.pathname) && u.href.startsWith(base.href);
+  const uniq = arr => { const seen = new Set(); return arr.filter(u => !seen.has(u.href) && seen.add(u.href)); };
+  const manual = uniq(ODS_LINKS.map(link => {
+    try { return new URL(String(link).trim(), base); } catch(e) { return null; }
+  }).filter(u => u && /\.ods$/i.test(u.pathname)));
+  if (manual.length) return {via:'manual', list:manual};
+  if (location.protocol === 'file:') return {via:null, list:[], reason:'file'};
+  try{
+    const r = await fetch(base.href, {cache:'no-store'});
+    if (r.ok){
+      const html = await r.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const urls = [...doc.querySelectorAll('a[href]')].map(a => { try{ return new URL(a.getAttribute('href'), base); }catch(e){ return null; } }).filter(u => u && keep(u));
+      if (urls.length) return {via:'listing', list:uniq(urls)};
+    }
+  }catch(e){}
+  try{
+    const r = await fetch(new URL('plans.json', base).href, {cache:'no-store'});
+    if (r.ok){
+      const j = await r.json();
+      const names = Array.isArray(j) ? j : (j.files || []);
+      const urls = names.map(n => { try{ return new URL(String(n), base); }catch(e){ return null; } }).filter(u => u && keep(u));
+      if (urls.length) return {via:'manifest', list:uniq(urls)};
+    }
+  }catch(e){}
+  return {via:null, list:[], reason:'nolist'};
+}
+const nameOfUrl = u => { const s = u.pathname.split('/').pop(); try{ return decodeURIComponent(s); }catch(e){ return s; } };
+
+const idb = {
+  open(){ return new Promise((res, rej) => { const r = indexedDB.open('plans-ods', 1); r.onupgradeneeded = () => r.result.createObjectStore('files', {keyPath:'name'}); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+  async run(mode, fn){ const db = await this.open(); return new Promise((res, rej) => { const tx = db.transaction('files', mode); const out = fn(tx.objectStore('files')); tx.oncomplete = () => res(out && out.result); tx.onerror = () => rej(tx.error); }); },
+  async all(){ try{ return (await this.run('readonly', s => s.getAll())) || []; }catch(e){ return []; } },
+  async put(rec){ try{ await this.run('readwrite', s => s.put(rec)); return true; }catch(e){ return false; } },
+  async clear(){ try{ await this.run('readwrite', s => s.clear()); }catch(e){} }
+};
+
+async function loadAll(){
+  state.loading = true; setStatus('Lecture des plans…');
+  const files = [], errors = [];
+  const found = await discover();
+  state.discovery = found;
+  await Promise.all(found.list.map(async u => {
+    const name = nameOfUrl(u);
+    try{
+      const r = await fetch(u.href, {cache:'no-store'});
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const f = await parseODS(name, await r.arrayBuffer()); f.origin = 'dossier'; files.push(f);
+    }catch(e){ errors.push({name, message:e.message}); }
+  }));
+  for (const rec of await idb.all()){
+    if (files.some(f => f.name === rec.name)) continue;
+    try{ const f = await parseODS(rec.name, rec.buf); f.origin = 'importé'; files.push(f); }
+    catch(e){ errors.push({name:rec.name, message:e.message}); }
+  }
+  files.sort((a,b) => a.name.localeCompare(b.name, 'fr', {numeric:true}));
+  state.files = files; state.errors = errors; state.loading = false;
+  aggregate();
+  clampCursor();
+  render();
+  if ($('#plans').open) renderPlans();
+}
+async function importFiles(list){
+  const errors = [];
+  for (const file of list){
+    if (!/\.ods$/i.test(file.name)){ errors.push({name:file.name, message:'format non pris en charge (.ods attendu)'}); continue; }
+    try{
+      const buf = await file.arrayBuffer();
+      await parseODS(file.name, buf);
+      await idb.put({name:file.name, buf, at:Date.now()});
+    }catch(e){ errors.push({name:file.name, message:e.message}); }
+  }
+  await loadAll();
+  state.errors = state.errors.concat(errors);
+  if ($('#plans').open) renderPlans();
+}
+function clampCursor(){
+  if (!state.sessions.length || state._hashed || state._clamped) return;
+  state._clamped = true;
+  const first = parseKey(state.sessions[0].date), last = parseKey(state.sessions[state.sessions.length-1].date);
+  if (state.cursor < first) state.cursor = first; else if (state.cursor > last) state.cursor = last;
+}
+
+/* =====================================================================
+   Formats
+   ===================================================================== */
+const F = {
+  long:new Intl.DateTimeFormat('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'}),
+  month:new Intl.DateTimeFormat('fr-FR', {month:'long', year:'numeric'}),
+  wd:new Intl.DateTimeFormat('fr-FR', {weekday:'long'}),
+  dm:new Intl.DateTimeFormat('fr-FR', {day:'numeric', month:'short'}),
+  mshort:new Intl.DateTimeFormat('fr-FR', {month:'short'})
+};
+const fmtDur = m => { if (!m) return ''; const h = Math.floor(m/60), r = Math.round(m % 60); return h ? (r ? `${h}h${pad(r)}` : `${h}h`) : `${r} min`; };
+const fmtNum = (n, max=1) => n == null ? '' : n.toLocaleString('fr-FR', {maximumFractionDigits:max});
+const weekLabel = mon => {
+  const end = addDays(mon, 6);
+  if (mon.getMonth() === end.getMonth()) return `${mon.getDate()} – ${end.getDate()} ${F.mshort.format(end)} ${end.getFullYear()}`;
+  return `${F.dm.format(mon)} – ${F.dm.format(end)} ${end.getFullYear()}`;
+};
+const visible = s => !state.hidden.has(discKey(s.disc));
+
+/* =====================================================================
+   Rendu : calendrier
+   ===================================================================== */
+function ariaFor(s){
+  return `${cap(F.long.format(parseKey(s.date)))}, ${s.disc || 'séance'}${s.title ? ', ' + s.title : ''}${s.dur ? ', ' + fmtDur(s.dur) : ''}`;
+}
+function chipHtml(s){
+  const k = discKey(s.disc);
+  const ttl = (k === 'off' && norm(s.title) === 'repos') ? '' : s.title;
+  return `<button type="button" class="chip${k === 'off' ? ' off' : ''}${s.optional ? ' opt' : ''}" style="--h:${hueOf(k)}" data-sid="${s.id}" aria-label="${esc(ariaFor(s))}">`
+    + `<b class="lbl">${esc(s.disc || '—')}</b><span class="ttl">${esc(ttl)}</span><span class="dur">${fmtDur(s.dur)}</span></button>`;
+}
+function cardHtml(s){
+  const k = discKey(s.disc);
+  const ex = s.content.length > 170 ? s.content.slice(0,170).trim() + '…' : s.content;
+  return `<button type="button" class="card${k === 'off' ? ' off' : ''}${s.optional ? ' opt' : ''}" style="--h:${hueOf(k)}" data-sid="${s.id}" aria-label="${esc(ariaFor(s))}">`
+    + `<span class="card-top"><b class="lbl">${esc(s.disc || '—')}</b>${prioHtml(s)}<span class="dur">${fmtDur(s.dur)}</span></span>`
+    + `<span class="card-ttl">${esc(s.title)}</span>`
+    + (s.tss ? `<span class="card-meta">${esc(s.labels.tss)} ${fmtNum(s.tss,0)}</span>` : '')
+    + (ex && k !== 'off' ? `<span class="card-ex">${esc(ex)}</span>` : '')
+    + `</button>`;
+}
+function weekTotals(mon){
+  let tss = 0, n = 0;
+  for (let i = 0; i < 7; i++) for (const s of (state.byDate.get(keyOf(addDays(mon,i))) || [])){
+    if (s.optional || discKey(s.disc) === 'off') continue;
+    n++; tss += s.tss || 0;
+  }
+  return {tss, n};
+}
+function renderMonth(){
+  const c = state.cursor, m = c.getMonth(), tk = keyOf(todayD());
+  const first = new Date(c.getFullYear(), m, 1, 12), last = new Date(c.getFullYear(), m + 1, 0, 12);
+  const start = startOfWeek(first), end = addDays(startOfWeek(last), 6);
+  let html = `<div class="month" role="group" aria-label="${esc(cap(F.month.format(c)))}">`;
+  ['lun.','mar.','mer.','jeu.','ven.','sam.','dim.'].forEach(d => html += `<div class="dowh" aria-hidden="true">${d}</div>`);
+  html += '<div class="dowh wkh" aria-hidden="true">Semaine</div>';
+  for (let mon = start; mon <= end; mon = addDays(mon, 7)){
+    for (let i = 0; i < 7; i++){
+      const day = addDays(mon, i), k = keyOf(day);
+      const list = (state.byDate.get(k) || []).filter(visible);
+      html += `<div class="day${day.getMonth() !== m ? ' out' : ''}${k === tk ? ' today' : ''}">`
+        + `<button type="button" class="num" data-goweek="${k}" aria-label="Voir la semaine du ${esc(F.long.format(day))}">${day.getDate()}</button>`
+        + list.map(chipHtml).join('') + '</div>';
+    }
+    const wk = isoWeekKey(mon), w = state.weeks.get(wk), t = weekTotals(mon);
+    html += `<button type="button" class="wk" data-goweek="${keyOf(mon)}" aria-label="Ouvrir la semaine ${esc(wk)}"><b>S${+wk.slice(-2)}</b>`
+      + (w && w.bloc ? `<span class="bl">${esc(w.bloc)}</span>` : '')
+      + (t.n ? `<span class="tt">${t.n} séance${t.n > 1 ? 's' : ''}${t.tss ? ' · TSS ' + fmtNum(t.tss,0) : ''}</span>` : '') + '</button>';
+  }
+  return html + '</div>';
+}
+function renderWeek(){
+  const mon = startOfWeek(state.cursor), wk = isoWeekKey(mon), w = state.weeks.get(wk), tk = keyOf(todayD());
+  let html = '';
+  if (w){
+    html += `<section class="wsum" aria-label="Synthèse de la semaine"><p class="bloc">${esc(w.bloc || wk)}</p>${w.obj ? `<p class="obj">${esc(w.obj)}</p>` : ''}`
+      + (w.stats.length ? `<dl class="stats">${w.stats.map(s => `<div><dt>${esc(s.label)}</dt><dd>${esc(s.text)}</dd></div>`).join('')}</dl>` : '') + '</section>';
+  } else {
+    const t = weekTotals(mon);
+    if (t.n) html += `<section class="wsum"><p class="bloc">Semaine ${esc(wk)}</p><dl class="stats"><div><dt>Séances</dt><dd>${t.n}</dd></div>${t.tss ? `<div><dt>TSS cumulé</dt><dd>${fmtNum(t.tss,0)}</dd></div>` : ''}</dl></section>`;
+  }
+  html += '<div class="week">';
+  for (let i = 0; i < 7; i++){
+    const day = addDays(mon, i), k = keyOf(day), list = (state.byDate.get(k) || []).filter(visible);
+    html += `<section class="wday${k === tk ? ' today' : ''}"><h3><span class="wd">${cap(F.wd.format(day))}</span><span class="dn">${F.dm.format(day)}</span></h3>`
+      + (list.length ? list.map(cardHtml).join('') : '<p class="none">Rien de prévu</p>') + '</section>';
+  }
+  return html + '</div>';
+}
+function emptyHtml(){
+  if (state.loading) return '<div class="empty"><h2>Lecture des plans…</h2></div>';
+  const d = state.discovery;
+  let why = 'Aucun fichier .ods n’a été trouvé.';
+  if (d.reason === 'file') why = 'La page est ouverte directement depuis le disque : le navigateur n’a pas le droit de lister le dossier.';
+  else if (d.reason === 'nolist') why = 'Le serveur ne fournit pas la liste des fichiers du dossier.';
+  return `<div class="empty"><h2>Aucune séance à afficher</h2><p>${esc(why)}</p>`
+    + '<p>Choisissez vos fichiers .ods (ils sont mémorisés dans ce navigateur), ou servez le dossier avec un petit serveur local pour une lecture automatique.</p>'
+    + '<div class="row"><button type="button" class="btn" data-act="pick">Choisir des fichiers .ods</button><button type="button" class="btn ghost" data-act="plans">Aide et fichiers</button></div></div>';
+}
+function periodTitle(){
+  if (state.view === 'month') return cap(F.month.format(state.cursor));
+  return weekLabel(startOfWeek(state.cursor));
+}
+function updateChrome(){
+  $('#period').textContent = state.sessions.length || !state.loading ? periodTitle() : 'Calendrier d’entraînement';
+  document.title = `${periodTitle()} · Calendrier d’entraînement`;
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === state.view)));
+  $('#legend').innerHTML = state.discs.map(d => `<button type="button" data-disc="${esc(d.key)}" aria-pressed="${!state.hidden.has(d.key)}" style="--h:${hueOf(d.key)}${d.key === 'off' ? ';--s:10%' : ''}"><i></i>${esc(d.label)}</button>`).join('');
+  if (!state.loading){
+    const nf = state.files.length;
+    setStatus(state.sessions.length ? `${state.sessions.length} séances · ${nf} fichier${nf > 1 ? 's' : ''}` : '');
+  }
+}
+function setStatus(t){ $('#status').textContent = t; }
+function writeHash(){
+  try{
+    const k = state.view === 'month' ? `#mois=${keyOf(state.cursor).slice(0,7)}` : `#semaine=${keyOf(startOfWeek(state.cursor))}`;
+    history.replaceState(null, '', k);
+  }catch(e){}
+}
+function readHash(){
+  const m = /^#(mois|semaine)=(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(location.hash);
+  if (!m) return false;
+  state.view = m[1] === 'mois' ? 'month' : 'week';
+  state.cursor = new Date(+m[2], +m[3]-1, +(m[4] || 1), 12);
+  return true;
+}
+function render(){
+  const main = $('#main');
+  if (!state.sessions.length){ main.innerHTML = emptyHtml(); updateChrome(); return; }
+  main.innerHTML = state.view === 'month' ? renderMonth() : renderWeek();
+  updateChrome();
+  writeHash();
+}
+function shift(dir){
+  const c = state.cursor;
+  state.cursor = state.view === 'month' ? new Date(c.getFullYear(), c.getMonth() + dir, 1, 12) : addDays(c, 7 * dir);
+  render();
+}
+
+/* =====================================================================
+   Détail d’une séance
+   ===================================================================== */
+function splitTop(str, sep){
+  const out = []; let depth = 0, cur = '';
+  for (let i = 0; i < str.length; i++){
+    const ch = str[i];
+    if (ch === '(') depth++; else if (ch === ')') depth = Math.max(0, depth - 1);
+    if (depth === 0 && str.startsWith(sep, i)){ out.push(cur); cur = ''; i += sep.length - 1; continue; }
+    cur += ch;
+  }
+  out.push(cur);
+  return out.map(x => x.trim()).filter(Boolean);
+}
+function contentHtml(text){
+  if (!text) return '<p class="none">Pas de contenu détaillé.</p>';
+  const blocks = [];
+  for (const para of text.split(/\n+/)){
+    const sents = para.replace(/([.!?])\s+(?=[A-ZÀ-ÖØ-Þ0-9])/g, '$1\u0001').split('\u0001');
+    for (const sent of sents){
+      const parts = splitTop(sent.replace(/\.\s*$/, ''), ' + ');
+      if (parts.length >= 3 || (parts.length === 2 && sent.length > 140)){
+        let lead = '';
+        const m = /^(.{3,90}?\s:\s)(.+)$/.exec(parts[0]);
+        if (m){ lead = m[1].trim(); parts[0] = m[2]; }
+        const timed = parts.filter(p => /^(\d+\s?['’′]|\d+\*\()/.test(p)).length >= parts.length * 0.6;
+        const tag = timed ? 'ol' : 'ul';
+        blocks.push((lead ? `<p>${esc(lead)}</p>` : '') + `<${tag}>${parts.map(p => `<li>${esc(p)}</li>`).join('')}</${tag}>`);
+      } else blocks.push(`<p>${esc(sent)}</p>`);
+    }
+  }
+  return blocks.join('');
+}
+function openDetail(id){
+  const s = state.sessions[id]; if (!s) return;
+  const k = discKey(s.disc), d = $('#detail');
+  const stat = (label, val) => val ? `<div><dt>${esc(label)}</dt><dd>${esc(val)}</dd></div>` : '';
+  const prev = state.sessions[id - 1], next = state.sessions[id + 1];
+  const nav = (x, cls, arrow) => x
+    ? `<button type="button" class="${cls}" data-sid="${x.id}">${cls === 'pv' ? '‹ ' : ''}${esc(F.dm.format(parseKey(x.date)))} · ${esc(x.disc || x.title)}${cls === 'nx' ? ' ›' : ''}</button>`
+    : `<button type="button" class="${cls}" disabled>${arrow}</button>`;
+  d.innerHTML = `
+    <div class="dhead" style="--h:${hueOf(k)}${k === 'off' ? ';--s:10%' : ''}">
+      <div class="grow">
+        <span class="badge">${esc(s.disc || 'Séance')}${prioHtml(s)}${s.optional ? ' · optionnelle' : ''}</span>
+        <h2 id="dTitle">${esc(s.title || s.disc || 'Séance')}</h2>
+        <p class="when">${esc(cap(F.long.format(parseKey(s.date))))}</p>
+      </div>
+      <button type="button" class="x" data-close aria-label="Fermer">✕</button>
+    </div>
+    <div class="dbody">
+      <dl class="stats">
+        ${stat('Durée', fmtDur(s.dur))}${stat('Priorité', s.prio)}${stat('Bloc', s.bloc)}${stat('Semaine', s.week)}
+        ${stat(s.labels.tss, s.tss ? fmtNum(s.tss, 0) : '')}${stat(s.labels.ctl, s.ctl ? fmtNum(s.ctl, 1) : '')}
+      </dl>
+      <h3>Contenu</h3>
+      <div class="content">${contentHtml(s.content)}</div>
+      ${s.extras.length ? `<h3>Autres informations</h3><dl class="extras">${s.extras.map(e => `<dt>${esc(e.label)}</dt><dd>${esc(e.text)}</dd>`).join('')}</dl>` : ''}
+      ${s.notes.length ? `<details><summary>Notes du fichier sur les colonnes</summary>${s.notes.map(n => `<p><b>${esc(n.label)}</b> : ${esc(n.note)}</p>`).join('')}</details>` : ''}
+    </div>
+    <div class="dfoot">${nav(prev, 'pv', '‹')}${nav(next, 'nx', '›')}<span class="src">Source : ${esc(s.file)}</span></div>`;
+  if (!d.open) d.showModal();
+  d.scrollTop = 0;
+}
+
+/* =====================================================================
+   Fenêtre « Plans » : fichiers lus, import, aide
+   ===================================================================== */
+function renderPlans(){
+  const d = $('#plans'), disc = state.discovery;
+  let info;
+  if (disc.via === 'manual') info = 'Les fichiers .ods sont lus depuis les liens saisis dans la constante ODS_LINKS du code.';
+  else if (disc.via === 'listing') info = 'Les fichiers .ods du dossier sont lus automatiquement (liste fournie par le serveur).';
+  else if (disc.via === 'manifest') info = 'Les fichiers sont lus d’après plans.json.';
+  else if (disc.reason === 'file') info = 'Page ouverte depuis le disque : le navigateur ne peut pas lister le dossier. Choisissez vos fichiers ci-dessous (ils sont mémorisés), ou utilisez un serveur local.';
+  else info = 'Le serveur ne fournit pas la liste des fichiers : ajoutez un plans.json ou choisissez vos fichiers ci-dessous.';
+  const files = state.files.length ? state.files.map(f => `
+    <li class="pf"><div class="pf-h"><b>${esc(f.name)}</b><span class="tag">${esc(f.origin)}</span></div>
+    <div class="pf-m">${f.sessions.length} séance${f.sessions.length > 1 ? 's' : ''} · ${f.weeks.length} semaine${f.weeks.length > 1 ? 's' : ''} de synthèse · feuilles : ${f.sheets.map(s => `${esc(s.name)} (${s.kind})`).join(', ')}</div>
+    ${f.reperes.length ? `<details><summary>Repères du plan</summary><ul>${f.reperes.map(r => `<li>${esc(r)}</li>`).join('')}</ul></details>` : ''}</li>`).join('')
+    : '<li class="pf-m">Aucun fichier lu pour le moment.</li>';
+  const errs = state.errors.map(e => `<li class="pf err"><b>${esc(e.name)}</b> : ${esc(e.message)}</li>`).join('');
+  d.innerHTML = `
+    <div class="dhead" style="--h:222"><div class="grow"><h2 id="pTitle">Plans chargés</h2><p class="when">${esc(info)}</p></div><button type="button" class="x" data-close aria-label="Fermer">✕</button></div>
+    <div class="pbody">
+      <ul class="files">${files}${errs}</ul>
+      <label class="drop" id="drop">Déposez des fichiers .ods ici ou<br><button type="button" class="btn" data-act="pick" style="margin-top:8px">Choisir des fichiers .ods</button></label>
+      <div class="row"><button type="button" class="btn ghost" data-act="reload">Actualiser</button><button type="button" class="btn ghost" data-act="forget">Oublier les fichiers importés</button></div>
+      <details><summary>Lecture automatique du dossier</summary>
+        <p>Un navigateur n’ouvre pas les autres fichiers d’un dossier quand une page est lancée par double-clic. Pour une lecture automatique, servez le dossier :</p>
+        <pre>cd dossier-de-vos-plans
+python3 -m http.server 8000</pre>
+        <p>puis ouvrez <code>http://localhost:8000/calendrier-entrainement.html</code>. Les nouveaux .ods ajoutés au dossier apparaissent après « Actualiser ».</p>
+        <p>Sur un hébergement sans liste de dossier, ajoutez un fichier <code>plans.json</code> : <code>["Plan_nov-dec_2026.ods", "Plan_jan-fev_2027.ods"]</code>.</p>
+        <p>En cas de doublon (même date, discipline et séance dans deux fichiers), le fichier placé en dernier par ordre alphabétique l’emporte.</p>
+      </details>
+    </div>`;
+}
+function pickFiles(){
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.multiple = true; inp.accept = '.ods,application/vnd.oasis.opendocument.spreadsheet';
+  inp.onchange = () => inp.files.length && importFiles([...inp.files]);
+  inp.click();
+}
+
+/* =====================================================================
+   Événements
+   ===================================================================== */
+document.addEventListener('click', e => {
+  const t = e.target;
+  const sid = t.closest('[data-sid]'); if (sid){ openDetail(+sid.dataset.sid); return; }
+  const gw = t.closest('[data-goweek]'); if (gw){ state.view = 'week'; state.cursor = parseKey(gw.dataset.goweek); render(); return; }
+  const dc = t.closest('[data-disc]'); if (dc){ const k = dc.dataset.disc; state.hidden.has(k) ? state.hidden.delete(k) : state.hidden.add(k); render(); return; }
+  const vw = t.closest('[data-view]'); if (vw){ state.view = vw.dataset.view; render(); return; }
+  if (t.closest('[data-close]')){ t.closest('dialog').close(); return; }
+  const act = t.closest('[data-act]');
+  if (act){
+    const a = act.dataset.act;
+    if (a === 'pick') pickFiles();
+    else if (a === 'plans'){ renderPlans(); $('#plans').showModal(); }
+    else if (a === 'reload') loadAll();
+    else if (a === 'forget') idb.clear().then(loadAll);
+    return;
+  }
+  if (t.tagName === 'DIALOG') t.close();
+});
+$('#prev').onclick = () => shift(-1);
+$('#next').onclick = () => shift(1);
+$('#today').onclick = () => { state.cursor = todayD(); render(); };
+$('#plansBtn').onclick = () => { renderPlans(); $('#plans').showModal(); };
+document.addEventListener('keydown', e => {
+  if (document.querySelector('dialog[open]') || e.target.closest('input,textarea,select') || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === 'ArrowLeft') shift(-1); else if (e.key === 'ArrowRight') shift(1);
+});
+['dragover','dragenter'].forEach(ev => document.addEventListener(ev, e => { if (e.dataTransfer && [...e.dataTransfer.types].includes('Files')){ e.preventDefault(); const z = $('#drop'); z && z.classList.add('hot'); } }));
+document.addEventListener('dragleave', () => { const z = $('#drop'); z && z.classList.remove('hot'); });
+document.addEventListener('drop', e => {
+  if (!e.dataTransfer || !e.dataTransfer.files.length) return;
+  e.preventDefault(); const z = $('#drop'); z && z.classList.remove('hot');
+  importFiles([...e.dataTransfer.files]);
+});
+
+/* =====================================================================
+   Démarrage
+   ===================================================================== */
+state._hashed = readHash();
+if (!state._hashed) state.view = window.innerWidth < 700 ? 'week' : 'month';
+render();
+loadAll();
+window.PlanCalendar = {parseODS, state, aggregate, openDetail, render};
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan d'Entraînement VTT XCO / Route</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-cyan: #06b6d4;
+
+            --disc-vtt: #10b981;
+            --disc-route: #3b82f6;
+            --disc-ht: #8b5cf6;
+            --disc-ppg: #ec4899;
+            --disc-repos: #64748b;
+            --disc-xco: #f59e0b;
+
+            --prio-obj1: #ef4444;
+            --prio-principale: #f59e0b;
+            --prio-secondaire: #3b82f6;
+            --prio-optionnelle: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: var(--bg-secondary);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-blue);
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* KPI Dashboard Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .stat-card .label {
+            font-size: 0.825rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .stat-card .sub {
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+        }
+
+        /* Controls & Filters */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: var(--bg-card);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .month-nav h2 {
+            font-size: 1.25rem;
+            min-width: 180px;
+            text-align: center;
+            text-transform: capitalize;
+        }
+
+        .filters {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select, .search-input {
+            background: var(--bg-primary);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            outline: none;
+        }
+
+        .filter-select:focus, .search-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .view-switch {
+            display: flex;
+            background: var(--bg-primary);
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .view-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .view-btn.active {
+            background: var(--bg-secondary);
+            color: var(--text-main);
+        }
+
+        /* Calendar Grid */
+        .calendar-container {
+            flex: 1;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            padding: 10px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .calendar-day {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            min-height: 120px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: border-color 0.2s;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.35;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .calendar-day.today {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 1px var(--accent-blue);
+        }
+
+        .day-header-number {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .day-number {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .today .day-number {
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
+        .week-tag {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .event-card {
+            background: rgba(255, 255, 255, 0.04);
+            border-left: 4px solid #94a3b8;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.15s ease, background-color 0.15s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            background: var(--bg-card-hover);
+        }
+
+        .event-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            line-height: 1.2;
+            color: var(--text-main);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .event-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.725rem;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-obj1 { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
+        .badge-principale { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid #f59e0b; }
+        .badge-secondaire { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid #3b82f6; }
+        .badge-optionnelle { background: rgba(100, 116, 139, 0.2); color: #cbd5e1; border: 1px solid #64748b; }
+
+        /* List View */
+        .list-view {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .week-group {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .week-header {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .week-header h3 {
+            font-size: 1rem;
+            color: var(--accent-cyan);
+        }
+
+        .week-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .list-row {
+            display: grid;
+            grid-template-columns: 100px 140px 1fr 100px 90px 100px;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .list-row:last-child {
+            border-bottom: none;
+        }
+
+        .list-row:hover {
+            background: var(--bg-card-hover);
+        }
+
+        /* Modal Details */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 650px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .modal-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 30px;
+        }
+
+        .modal-header-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .modal-field .lbl {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .modal-field .val {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .modal-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .modal-section h4 {
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .modal-content-box {
+            background: var(--bg-primary);
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Banner File Alert */
+        .file-banner {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px dashed var(--accent-blue);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .file-banner-text {
+            font-size: 0.9rem;
+            color: #93c5fd;
+        }
+
+        @media (max-width: 900px) {
+            .calendar-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+            .calendar-day-header {
+                display: none;
+            }
+            .calendar-day {
+                min-height: auto;
+            }
+            .list-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .modal-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <div>
+                <h1>Plan d'Entraînement Antonin saison 2026</h1>
+                <p style="font-size: 0.825rem; color: var(--text-muted);">Suivi interactif des séances, charge et objectifs</p>
+            </div>
+        </div>
+
+        <div class="header-controls">
+            <div class="file-input-wrapper">
+                <button class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    Charger un fichier CSV
+                </button>
+                <input type="file" id="csvFileInput" accept=".csv, .txt">
+            </div>
+        </div>
+    </header>
+
+    <div id="fileBanner" class="file-banner">
+        <div class="file-banner-text">
+            <strong>Chargement automatique :</strong> Recherche du fichier CSV local <code>Plan_U19_XCO_30_juillet_20_septembre_2026_ajuste_Brouains_v2.csv</code> dans le dossier. Si la lecture automatique est bloquée par votre navigateur, sélectionnez-le via le bouton ci-contre.
+        </div>
+        <button class="btn btn-primary" onclick="document.getElementById('csvFileInput').click()">Choisir le fichier</button>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-card">
+            <span class="label">Volume Mensuel</span>
+            <span class="value" id="statDuration">00h00</span>
+            <span class="sub" id="statSessionsCount">0 séances ce mois</span>
+        </div>
+        <div class="stat-card">
+            <span class="label">Charge Totale (TSS)</span>
+            <span class="value" id="statTSS">0</span>
+            <span class="sub" id="statAvgTSS">0 TSS / séance (moyenne)</span>
+        </div>
+        <div class="stat-card">
+            <span class="label">Discipline Dominante</span>
+            <span class="value" id="statMainDisc">-</span>
+            <span class="sub" id="statMainDiscCount">-</span>
+        </div>
+        <div class="stat-card">
+            <span class="label">Prochains Objectifs</span>
+            <span class="value" id="statObjCount" style="color: var(--accent-amber);">0</span>
+            <span class="sub" id="statNextObj">Aucune compétition détectée</span>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="month-nav">
+            <button class="btn" id="prevMonthBtn">&larr;</button>
+            <h2 id="currentMonthLabel">Août 2026</h2>
+            <button class="btn" id="nextMonthBtn">&rarr;</button>
+            <button class="btn" id="todayBtn">Aujourd'hui</button>
+        </div>
+
+        <div class="filters">
+            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher une séance..." />
+            
+            <select id="disciplineFilter" class="filter-select">
+                <option value="ALL">Toutes disciplines</option>
+            </select>
+
+            <select id="priorityFilter" class="filter-select">
+                <option value="ALL">Toutes priorités</option>
+            </select>
+
+            <div class="view-switch">
+                <button class="view-btn active" id="viewCalBtn">Calendrier</button>
+                <button class="view-btn" id="viewListBtn">Liste / Semaines</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar View Container -->
+    <div id="calendarView" class="calendar-container">
+        <div class="calendar-grid" id="calendarHeaderGrid">
+            <div class="calendar-day-header">Lundi</div>
+            <div class="calendar-day-header">Mardi</div>
+            <div class="calendar-day-header">Mercredi</div>
+            <div class="calendar-day-header">Jeudi</div>
+            <div class="calendar-day-header">Vendredi</div>
+            <div class="calendar-day-header">Samedi</div>
+            <div class="calendar-day-header">Dimanche</div>
+        </div>
+        <div class="calendar-grid" id="calendarDaysGrid" style="margin-top: 8px;">
+            <!-- Days rendered dynamically -->
+        </div>
+    </div>
+
+    <!-- List View Container (Hidden by default) -->
+    <div id="listView" class="list-view" style="display: none;">
+        <!-- List content rendered dynamically -->
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="sessionModal">
+        <div class="modal-card">
+            <button class="modal-close" id="modalCloseBtn">&times;</button>
+            
+            <div class="modal-header">
+                <div class="modal-header-top">
+                    <span id="modalDate">Samedi 12 Septembre 2026</span>
+                    <span>&bull;</span>
+                    <span id="modalSemaine" class="week-tag">S7</span>
+                    <span>&bull;</span>
+                    <span id="modalBloc" style="color: var(--accent-cyan); font-weight: 600;">Affûtage</span>
+                </div>
+                <div class="modal-title" id="modalTitle">Coupe de France Brouains</div>
+            </div>
+
+            <div class="modal-grid">
+                <div class="modal-field">
+                    <span class="lbl">Discipline</span>
+                    <span class="val" id="modalDiscipline">VTT XCO</span>
+                </div>
+                <div class="modal-field">
+                    <span class="lbl">Durée</span>
+                    <span class="val" id="modalDuree">01h30</span>
+                </div>
+                <div class="modal-field">
+                    <span class="lbl">Charge Prévue</span>
+                    <span class="val" id="modalCharge">150 TSS</span>
+                </div>
+                <div class="modal-field">
+                    <span class="lbl">Priorité</span>
+                    <span class="val" id="modalPriorite"><span class="badge badge-obj1">Objectif n°1</span></span>
+                </div>
+                <div class="modal-field">
+                    <span class="lbl">Jour</span>
+                    <span class="val" id="modalJour">Samedi</span>
+                </div>
+                <div class="modal-field">
+                    <span class="lbl">Bloc Phase</span>
+                    <span class="val" id="modalBlocVal">Compétition A</span>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <h4>Description & Consignes de la séance</h4>
+                <div class="modal-content-box" id="modalContenu">
+                    Échauffement 35 à 45’ avec rappels VO2 et départs puis course objectif principal.
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn" id="modalPrevBtn">&larr; Séance Précédente</button>
+                <button class="btn" id="modalNextBtn">Séance Suivante &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let rawSessions = [];
+        let filteredSessions = [];
+        let currentDate = new Date(2026, 7, 1); // Default to August 2026
+        let currentModalIndex = -1;
+        let activeView = 'calendar'; // 'calendar' or 'list'
+
+        const DEFAULT_FILE_NAME = "Plan_U19_XCO_30_juillet_20_septembre_2026_ajuste_Brouains_v2.csv";
+
+        // DOM elements
+        const calendarDaysGrid = document.getElementById('calendarDaysGrid');
+        const listView = document.getElementById('listView');
+        const currentMonthLabel = document.getElementById('currentMonthLabel');
+        const prevMonthBtn = document.getElementById('prevMonthBtn');
+        const nextMonthBtn = document.getElementById('nextMonthBtn');
+        const todayBtn = document.getElementById('todayBtn');
+        const csvFileInput = document.getElementById('csvFileInput');
+        const fileBanner = document.getElementById('fileBanner');
+        
+        const disciplineFilter = document.getElementById('disciplineFilter');
+        const priorityFilter = document.getElementById('priorityFilter');
+        const searchInput = document.getElementById('searchInput');
+
+        const viewCalBtn = document.getElementById('viewCalBtn');
+        const viewListBtn = document.getElementById('viewListBtn');
+
+        const sessionModal = document.getElementById('sessionModal');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+        // Discipline Colors
+        function getDisciplineColor(disc) {
+            if (!disc) return '#64748b';
+            const d = disc.toLowerCase();
+            if (d.includes('xco')) return 'var(--accent-amber)';
+            if (d.includes('vtt')) return 'var(--disc-vtt)';
+            if (d.includes('route')) return 'var(--disc-route)';
+            if (d.includes('ht') || d.includes('home trainer')) return 'var(--disc-ht)';
+            if (d.includes('ppg')) return 'var(--disc-ppg)';
+            if (d.includes('repos')) return 'var(--disc-repos)';
+            return '#38bdf8';
+        }
+
+        function getPriorityBadgeClass(prio) {
+            if (!prio) return 'badge-secondaire';
+            const p = prio.toLowerCase();
+            if (p.includes('1') || p.includes('objectif')) return 'badge-obj1';
+            if (p.includes('principale')) return 'badge-principale';
+            if (p.includes('secondaire')) return 'badge-secondaire';
+            return 'badge-optionnelle';
+        }
+
+        // CSV Parser supporting quotes and dynamic separators (; or ,)
+        function parseCSV(text) {
+            const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
+            if (lines.length < 2) return [];
+
+            // Detect delimiter
+            const firstLine = lines[0];
+            const delimiter = firstLine.includes(';') ? ';' : ',';
+
+            const headers = firstLine.split(delimiter).map(h => h.trim().replace(/^"|"$/g, ''));
+            
+            const sessions = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                if (!line.trim()) continue;
+
+                // Split with handling for potential internal quotes
+                const values = [];
+                let insideQuote = false;
+                let curVal = '';
+
+                for (let charIdx = 0; charIdx < line.length; charIdx++) {
+                    const c = line[charIdx];
+                    if (c === '"') {
+                        insideQuote = !insideQuote;
+                    } else if (c === delimiter && !insideQuote) {
+                        values.push(curVal.trim().replace(/^"|"$/g, ''));
+                        curVal = '';
+                    } else {
+                        curVal += c;
+                    }
+                }
+                values.push(curVal.trim().replace(/^"|"$/g, ''));
+
+                if (values.length >= headers.length) {
+                    const session = {};
+                    headers.forEach((h, index) => {
+                        session[h] = values[index] || '';
+                    });
+
+                    // Parse Date DD/MM/YYYY
+                    if (session['Date']) {
+                        const parts = session['Date'].split('/');
+                        if (parts.length === 3) {
+                            const day = parseInt(parts[0], 10);
+                            const month = parseInt(parts[1], 10) - 1;
+                            const year = parseInt(parts[2], 10);
+                            session._dateObj = new Date(year, month, day);
+                        }
+                    }
+
+                    // Parse Duration (hhmm -> minutes or standard display)
+                    session._chargeNum = parseInt(session['Charge prévue'], 10) || 0;
+
+                    if (session._dateObj && !isNaN(session._dateObj.getTime())) {
+                        sessions.push(session);
+                    }
+                }
+            }
+
+            return sessions;
+        }
+
+        // Auto load local file or handle user input
+        async function autoLoadDefaultFile() {
+            try {
+                const response = await fetch(DEFAULT_FILE_NAME);
+                if (response.ok) {
+                    const text = await response.text();
+                    processCSVData(text);
+                    fileBanner.style.display = 'none';
+                } else {
+                    fileBanner.style.display = 'flex';
+                }
+            } catch (err) {
+                console.log("Auto-fetch prevented by browser security. Showing file prompt.", err);
+                fileBanner.style.display = 'flex';
+            }
+        }
+
+        function processCSVData(text) {
+            rawSessions = parseCSV(text);
+            if (rawSessions.length > 0) {
+                // Sort by date
+                rawSessions.sort((a, b) => a._dateObj - b._dateObj);
+                
+                // Set current date to first session's month
+                currentDate = new Date(rawSessions[0]._dateObj.getFullYear(), rawSessions[0]._dateObj.getMonth(), 1);
+
+                populateFilterDropdowns();
+                applyFilters();
+            }
+        }
+
+        function populateFilterDropdowns() {
+            const disciplines = new Set();
+            const priorities = new Set();
+
+            rawSessions.forEach(s => {
+                if (s['Discipline']) disciplines.add(s['Discipline']);
+                if (s['Priorité']) priorities.add(s['Priorité']);
+            });
+
+            disciplineFilter.innerHTML = '<option value="ALL">Toutes disciplines</option>';
+            disciplines.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d;
+                disciplineFilter.appendChild(opt);
+            });
+
+            priorityFilter.innerHTML = '<option value="ALL">Toutes priorités</option>';
+            priorities.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                priorityFilter.appendChild(opt);
+            });
+        }
+
+        function applyFilters() {
+            const discVal = disciplineFilter.value;
+            const prioVal = priorityFilter.value;
+            const searchVal = searchInput.value.toLowerCase().trim();
+
+            filteredSessions = rawSessions.filter(s => {
+                const matchDisc = (discVal === 'ALL' || s['Discipline'] === discVal);
+                const matchPrio = (prioVal === 'ALL' || s['Priorité'] === prioVal);
+                
+                const fullText = `${s['Séance']} ${s['Contenu']} ${s['Bloc']} ${s['Discipline']}`.toLowerCase();
+                const matchSearch = !searchVal || fullText.includes(searchVal);
+
+                return matchDisc && matchPrio && matchSearch;
+            });
+
+            renderCurrentView();
+            updateStats();
+        }
+
+        function renderCurrentView() {
+            if (activeView === 'calendar') {
+                calendarDaysGrid.parentElement.style.display = 'block';
+                listView.style.display = 'none';
+                renderCalendar();
+            } else {
+                calendarDaysGrid.parentElement.style.display = 'none';
+                listView.style.display = 'flex';
+                renderList();
+            }
+        }
+
+        // Calendar Renderer
+        function renderCalendar() {
+            calendarDaysGrid.innerHTML = '';
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            // Set Title
+            const monthName = currentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+            currentMonthLabel.textContent = monthName;
+
+            // First day of month & total days
+            const firstDayOfMonth = new Date(year, month, 1);
+            const lastDayOfMonth = new Date(year, month + 1, 0);
+            
+            // Adjust for Monday start (0: Sun, 1: Mon -> transform so Mon is 0)
+            let startDayOfWeek = firstDayOfMonth.getDay() - 1;
+            if (startDayOfWeek === -1) startDayOfWeek = 6;
+
+            const daysInMonth = lastDayOfMonth.getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+            const today = new Date();
+
+            // 1. Previous month trailing days
+            for (let i = startDayOfWeek - 1; i >= 0; i--) {
+                const dayNum = daysInPrevMonth - i;
+                const cellDate = new Date(year, month - 1, dayNum);
+                const dayEl = createDayCell(cellDate, true);
+                calendarDaysGrid.appendChild(dayEl);
+            }
+
+            // 2. Current month days
+            for (let d = 1; d <= daysInMonth; d++) {
+                const cellDate = new Date(year, month, d);
+                const isToday = (today.getFullYear() === year && today.getMonth() === month && today.getDate() === d);
+                const dayEl = createDayCell(cellDate, false, isToday);
+                calendarDaysGrid.appendChild(dayEl);
+            }
+
+            // 3. Next month leading days to complete grid (multiples of 7)
+            const totalCells = calendarDaysGrid.children.length;
+            const remaining = (7 - (totalCells % 7)) % 7;
+            for (let i = 1; i <= remaining; i++) {
+                const cellDate = new Date(year, month + 1, i);
+                const dayEl = createDayCell(cellDate, true);
+                calendarDaysGrid.appendChild(dayEl);
+            }
+        }
+
+        function createDayCell(cellDate, isOtherMonth, isToday = false) {
+            const dayEl = document.createElement('div');
+            dayEl.className = `calendar-day ${isOtherMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}`;
+
+            // Find sessions on this day
+            const daySessions = filteredSessions.filter(s => 
+                s._dateObj.getFullYear() === cellDate.getFullYear() &&
+                s._dateObj.getMonth() === cellDate.getMonth() &&
+                s._dateObj.getDate() === cellDate.getDate()
+            );
+
+            // Week tag if available
+            const weekTag = daySessions.length > 0 ? daySessions[0]['Semaine'] : '';
+
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'day-header-number';
+            headerDiv.innerHTML = `
+                <span class="day-number">${cellDate.getDate()}</span>
+                ${weekTag ? `<span class="week-tag">${weekTag}</span>` : ''}
+            `;
+            dayEl.appendChild(headerDiv);
+
+            // Render events
+            daySessions.forEach(session => {
+                const eventCard = document.createElement('div');
+                eventCard.className = 'event-card';
+                eventCard.style.borderLeftColor = getDisciplineColor(session['Discipline']);
+
+                eventCard.innerHTML = `
+                    <div class="event-title">${session['Séance'] || session['Discipline']}</div>
+                    <div class="event-meta">
+                        <span>${session['Durée (hhmm)'] || ''}</span>
+                        <span class="badge ${getPriorityBadgeClass(session['Priorité'])}">${session['Priorité'] || ''}</span>
+                    </div>
+                `;
+
+                eventCard.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(session);
+                });
+
+                dayEl.appendChild(eventCard);
+            });
+
+            return dayEl;
+        }
+
+        // List / Week View Renderer
+        function renderList() {
+            listView.innerHTML = '';
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            // Filter for sessions in current month
+            const monthSessions = filteredSessions.filter(s => 
+                s._dateObj.getFullYear() === year && s._dateObj.getMonth() === month
+            );
+
+            if (monthSessions.length === 0) {
+                listView.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">Aucun entraînement trouvé pour ce mois ou selon les filtres.</div>`;
+                return;
+            }
+
+            // Group by Week (Semaine column)
+            const grouped = {};
+            monthSessions.forEach(s => {
+                const w = s['Semaine'] || 'Hors Semaine';
+                if (!grouped[w]) grouped[w] = [];
+                grouped[w].push(s);
+            });
+
+            Object.keys(grouped).forEach(week => {
+                const sessions = grouped[week];
+                let weekTSS = 0;
+                let totalMinutes = 0;
+
+                sessions.forEach(s => {
+                    weekTSS += s._chargeNum;
+                    if (s['Durée (hhmm)']) {
+                        const parts = s['Durée (hhmm)'].replace('h', ':').split(':');
+                        if (parts.length === 2) {
+                            totalMinutes += parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+                        }
+                    }
+                });
+
+                const hours = Math.floor(totalMinutes / 60);
+                const mins = totalMinutes % 60;
+                const durStr = `${String(hours).padStart(2,'0')}h${String(mins).padStart(2,'0')}`;
+
+                const groupEl = document.createElement('div');
+                groupEl.className = 'week-group';
+
+                groupEl.innerHTML = `
+                    <div class="week-header">
+                        <h3>Semaine ${week} (${sessions.length} séances)</h3>
+                        <div class="week-stats">
+                            <span>Durée: <strong>${durStr}</strong></span>
+                            <span>Charge: <strong>${weekTSS} TSS</strong></span>
+                        </div>
+                    </div>
+                `;
+
+                sessions.forEach(s => {
+                    const row = document.createElement('div');
+                    row.className = 'list-row';
+                    row.innerHTML = `
+                        <div><strong>${s['Date']}</strong><div style="font-size:0.75rem; color:var(--text-muted);">${s['Jour']}</div></div>
+                        <div><span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${getDisciplineColor(s['Discipline'])}; margin-right:6px;"></span>${s['Discipline']}</div>
+                        <div><strong style="color:var(--text-main);">${s['Séance']}</strong><div style="font-size:0.8rem; color:var(--text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width: 400px;">${s['Contenu']}</div></div>
+                        <div>${s['Durée (hhmm)']}</div>
+                        <div><strong>${s['Charge prévue']} TSS</strong></div>
+                        <div><span class="badge ${getPriorityBadgeClass(s['Priorité'])}">${s['Priorité']}</span></div>
+                    `;
+
+                    row.addEventListener('click', () => openModal(s));
+                    groupEl.appendChild(row);
+                });
+
+                listView.appendChild(groupEl);
+            });
+        }
+
+        // Stats calculation for current month
+        function updateStats() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            const monthSessions = filteredSessions.filter(s => 
+                s._dateObj.getFullYear() === year && s._dateObj.getMonth() === month
+            );
+
+            let totalMinutes = 0;
+            let totalTSS = 0;
+            const discCounts = {};
+            let objCount = 0;
+            let nextObjText = "Aucun objectif principal";
+
+            monthSessions.forEach(s => {
+                totalTSS += s._chargeNum;
+
+                if (s['Durée (hhmm)']) {
+                    const parts = s['Durée (hhmm)'].replace('h', ':').split(':');
+                    if (parts.length === 2) {
+                        totalMinutes += parseInt(parts[0], 10) * 60 + (parseInt(parts[1], 10) || 0);
+                    }
+                }
+
+                if (s['Discipline']) {
+                    discCounts[s['Discipline']] = (discCounts[s['Discipline']] || 0) + 1;
+                }
+
+                if (s['Priorité'] && s['Priorité'].toLowerCase().includes('1')) {
+                    objCount++;
+                    nextObjText = s['Séance'] + ' (' + s['Date'] + ')';
+                }
+            });
+
+            // Duration String
+            const hours = Math.floor(totalMinutes / 60);
+            const mins = totalMinutes % 60;
+            document.getElementById('statDuration').textContent = `${String(hours).padStart(2, '0')}h${String(mins).padStart(2, '0')}`;
+            document.getElementById('statSessionsCount').textContent = `${monthSessions.length} séance(s) ce mois`;
+
+            // TSS
+            document.getElementById('statTSS').textContent = totalTSS;
+            const avgTSS = monthSessions.length > 0 ? Math.round(totalTSS / monthSessions.length) : 0;
+            document.getElementById('statAvgTSS').textContent = `${avgTSS} TSS / séance (moyenne)`;
+
+            // Main Discipline
+            let topDisc = '-';
+            let topCount = 0;
+            Object.keys(discCounts).forEach(d => {
+                if (discCounts[d] > topCount) {
+                    topCount = discCounts[d];
+                    topDisc = d;
+                }
+            });
+            document.getElementById('statMainDisc').textContent = topDisc;
+            document.getElementById('statMainDiscCount').textContent = topCount > 0 ? `${topCount} séance(s)` : '-';
+
+            // Objectives
+            document.getElementById('statObjCount').textContent = objCount;
+            document.getElementById('statNextObj').textContent = nextObjText;
+        }
+
+        // Modal Handler
+        function openModal(session) {
+            currentModalIndex = filteredSessions.indexOf(session);
+            fillModalData(session);
+            sessionModal.classList.add('active');
+        }
+
+        function fillModalData(session) {
+            document.getElementById('modalDate').textContent = `${session['Jour']} ${session['Date']}`;
+            document.getElementById('modalSemaine').textContent = session['Semaine'] || '-';
+            document.getElementById('modalBloc').textContent = session['Bloc'] || '-';
+            document.getElementById('modalTitle').textContent = session['Séance'] || "Séance d'entraînement";
+            document.getElementById('modalDiscipline').textContent = session['Discipline'] || '-';
+            document.getElementById('modalDiscipline').style.color = getDisciplineColor(session['Discipline']);
+            
+            document.getElementById('modalDuree').textContent = session['Durée (hhmm)'] || '-';
+            document.getElementById('modalCharge').textContent = `${session['Charge prévue'] || 0} TSS`;
+            document.getElementById('modalJour').textContent = session['Jour'] || '-';
+            document.getElementById('modalBlocVal').textContent = session['Bloc'] || '-';
+
+            const prio = session['Priorité'] || '-';
+            document.getElementById('modalPriorite').innerHTML = `<span class="badge ${getPriorityBadgeClass(prio)}">${prio}</span>`;
+
+            document.getElementById('modalContenu').textContent = session['Contenu'] || 'Aucune consigne détaillée.';
+        }
+
+        function closeModal() {
+            sessionModal.classList.remove('active');
+        }
+
+        // Event Listeners
+        prevMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCurrentView();
+            updateStats();
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCurrentView();
+            updateStats();
+        });
+
+        todayBtn.addEventListener('click', () => {
+            currentDate = new Date();
+            renderCurrentView();
+            updateStats();
+        });
+
+        csvFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    processCSVData(evt.target.result);
+                    fileBanner.style.display = 'none';
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        disciplineFilter.addEventListener('change', applyFilters);
+        priorityFilter.addEventListener('change', applyFilters);
+        searchInput.addEventListener('input', applyFilters);
+
+        viewCalBtn.addEventListener('click', () => {
+            activeView = 'calendar';
+            viewCalBtn.classList.add('active');
+            viewListBtn.classList.remove('active');
+            renderCurrentView();
+        });
+
+        viewListBtn.addEventListener('click', () => {
+            activeView = 'list';
+            viewListBtn.classList.add('active');
+            viewCalBtn.classList.remove('active');
+            renderCurrentView();
+        });
+
+        modalCloseBtn.addEventListener('click', closeModal);
+        sessionModal.addEventListener('click', (e) => {
+            if (e.target === sessionModal) closeModal();
+        });
+
+        document.getElementById('modalPrevBtn').addEventListener('click', () => {
+            if (currentModalIndex > 0) {
+                currentModalIndex--;
+                fillModalData(filteredSessions[currentModalIndex]);
+            }
+        });
+
+        document.getElementById('modalNextBtn').addEventListener('click', () => {
+            if (currentModalIndex < filteredSessions.length - 1) {
+                currentModalIndex++;
+                fillModalData(filteredSessions[currentModalIndex]);
+            }
+        });
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            autoLoadDefaultFile();
+        });
+    </script>
+</body>
+</html>
